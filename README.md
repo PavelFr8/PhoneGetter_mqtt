@@ -1,11 +1,10 @@
 # MQTT Broker for [PhoneGetter](https://github.com/PavelFr8/PhoneGetter)
+This project implements a simple command broker based on MQTT with Flask to send 
+commands to devices via MQTT. The server subscribes to MQTT topics related to devices 
+and sends responses with status updates. The system is designed for simple interaction 
+with IoT devices (ESP8266) through MQTT.
 
-Этот проект реализует простой брокер команд на основе MQTT с Flask для отправки команд 
-на устройства через MQTT. Сервер подписывается на MQTT-темы, связанные с устройствами, 
-и отправляет ответы с обновлениями статуса. Система предназначена для простого взаимодействия 
-с IoT-устройствами(ESP8266) через MQTT.
-
-## API Эндпоинты
+## API Endpoints
 
 ```bash
 curl -X POST http://127.0.0.1:5000/send_command -H "Content-Type: application/json" -d '{
@@ -13,7 +12,8 @@ curl -X POST http://127.0.0.1:5000/send_command -H "Content-Type: application/js
   "cell_id": 12}
 ```
 
-Отправив JSON с токеном устройства и деталями команды. Команда будет опубликована в соответствующую MQTT-тему.
+Send a JSON with the device API token and command details. 
+The command will be published to the corresponding MQTT topic.
 
 #### Пример тела запроса:
 

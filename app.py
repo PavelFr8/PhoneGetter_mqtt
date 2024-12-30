@@ -12,6 +12,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Load environment variables from .env file
 load_dotenv()
 MQTT_BROKER = os.environ.get("MQTT_BROKER")
 MQTT_PORT = int(os.environ.get("MQTT_PORT"))
@@ -22,10 +23,12 @@ MQTT_TOPIC_RESPONSE = "device/{device_api_token}/response"
 
 mqtt_client = Client()
 
+# MQTT callback for successful connection
 def on_connect(client, userdata, flags, rc):
     logger.info(f"Connected to MQTT Broker with result code {rc}")
     client.subscribe("device/+/command")
 
+# MQTT callback for received messages
 def on_message(client, userdata, msg):
     try:
         logger.info(f"Received message on topic {msg.topic}")
@@ -36,6 +39,7 @@ def on_message(client, userdata, msg):
     except Exception as e:
         logger.error(f"Error processing message: {e}")
 
+# Function to start the MQTT client
 def start_mqtt_client():
     logger.info("Starting MQTT client...")
     mqtt_client.on_connect = on_connect
@@ -50,15 +54,17 @@ def start_mqtt_client():
     except Exception as e:
         logger.error(f"Failed to connect to MQTT broker: {e}")
 
-# запуск MQTT клиента в отдельном потоке, чтобы не мешать Flask
+# Start MQTT client in a separate thread to avoid blocking Flask
 logger.info("Starting MQTT thread...")
 mqtt_thread = threading.Thread(target=start_mqtt_client, daemon=True)
 mqtt_thread.start()
 
+# Model to validate incoming command data
 class Command(BaseModel):
     device_api_token: str
     cell_id: int = 0
 
+# Endpoint to send command to device
 @app.route('/send_command', methods=['POST'])
 def send_command():
     try:
